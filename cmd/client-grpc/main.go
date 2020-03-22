@@ -41,6 +41,30 @@ func makeOrderServiceRequest() {
 
 		log.Print("Search Result:", searchOrder)
 	}
+
+	orders := []*v1.Order{
+		&v1.Order{Id: "001"},
+		&v1.Order{Id: "002"},
+		&v1.Order{Id: "003"},
+	}
+
+	updateStream, err := c.UpdateOrders(ctx)
+	if err != nil {
+		log.Fatalf("%v.UpdateOrders(_) = _, %v", c, err)
+	}
+
+	for _, order := range orders {
+		if err := updateStream.Send(order); err != nil {
+			log.Fatalf("%v.Send(%v) = %v", updateStream, order, err)
+		}
+	}
+
+	updateResponse, err := updateStream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("%v.CloseAndRec() got error %v, want %v", updateStream, err, nil)
+	}
+
+	log.Printf("UpdateOrders response: %s", updateResponse)
 }
 
 func makeProductServiceRequest() {

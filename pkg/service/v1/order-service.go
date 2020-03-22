@@ -2,6 +2,7 @@ package v1
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"strings"
 
@@ -38,4 +39,21 @@ func (s *orderServiceServer) SearchOrders(searchQuery *wrappers.StringValue, str
 	}
 
 	return nil
+}
+
+func (s *orderServiceServer) UpdateOrders(stream v1.OrderService_UpdateOrdersServer) error {
+	ordersStr := "Updated Order IDs: "
+
+	for {
+		order, err := stream.Recv()
+
+		if err == io.EOF {
+			return stream.SendAndClose(&wrappers.StringValue{Value: "Orders processed " + ordersStr})
+		}
+
+		s.orderMap[order.Id] = order
+
+		log.Printf("Order ID %s: Updated", order.Id)
+		ordersStr += order.Id + ", "
+	}
 }
