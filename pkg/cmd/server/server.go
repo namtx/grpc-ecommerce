@@ -7,12 +7,20 @@ import (
 	v1 "github.com/namtx/grpc-ecommerce/pkg/service/v1"
 )
 
-func RunServer() error {
+func RunProductServiceServer() error {
 	ctx := context.Background()
 
 	v1API := v1.NewProductServiceServer()
-
 	port := "50051"
 
-	return grpc.RunServer(ctx, v1API, port)
+	return grpc.RunProductServiceServer(ctx, v1API, port)
+}
+
+func RunOrderServiceServer() error {
+	ctx := context.Background()
+	v1API := v1.NewOrderServiceServer()
+
+	port := "50052"
+
+	return grpc.RunOrderServiceServer(ctx, v1API, port)
 }
